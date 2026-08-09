@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.github.zxcplll.minecraft1211ezcheat'
+version = '2.0.0'
+
+layout.buildDirectory = file('build-release')
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.ow2.asm:asm:9.7.1'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.jar {
+    archiveBaseName = 'Minecraft1211ezcheat-agent'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+            'Main-Class': 'io.github.zxcplll.minecraft1211ezcheat.Attacher',
+            'Agent-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV6',
+            'Premain-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV6',
+            'Can-Redefine-Classes': 'true',
+            'Can-Retransform-Classes': 'true'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
+    exclude 'io/github/zxcplll/minecraft1211ezcheat/AgentHooksV6*.class'
+    exclude 'io/github/zxcplll/minecraft1211ezcheat/NativeOverlayBridgeV6*.class'
+}
+
+tasks.register('bootstrapJar', Jar) {
+    archiveBaseName = 'Minecraft1211ezcheat-bootstrap'
+    from(sourceSets.main.output) {
+        include 'io/github/zxcplll/minecraft1211ezcheat/AgentHooksV6*.class'
+        include 'io/github/zxcplll/minecraft1211ezcheat/NativeOverlayBridgeV6*.class'
+    }
+}

@@ -1,0 +1,7 @@
+Dear ImGui fork
+Repository: https://github.com/nyaoouo/imgui
+Commit: 374b9a7fb437956ad0435ce3d4082997ecb1af19
+Version: 1.90.7 WIP
+License: MIT
+
+The full license text is available at third_party/imgui/LICENSE.txt.

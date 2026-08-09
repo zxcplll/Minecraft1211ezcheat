@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Minecraft1211ezcheat</RootNamespace>
+    <AssemblyName>Minecraft1211ezcheat</AssemblyName>
+    <Version>2.0.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishTrimmed>false</PublishTrimmed>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\TrainerAgent\build-release\libs\Minecraft1211ezcheat-agent-2.0.0.jar"
+                      LogicalName="Minecraft1211ezcheat.Resources.agent.jar" />
+    <EmbeddedResource Include="..\TrainerAgent\build-release\libs\Minecraft1211ezcheat-bootstrap-2.0.0.jar"
+                      LogicalName="Minecraft1211ezcheat.Resources.bootstrap.jar" />
+    <EmbeddedResource Include="..\NativeOverlay\out\Minecraft1211ezcheat-overlay-2.0.0.dll"
+                      LogicalName="Minecraft1211ezcheat.Resources.overlay.dll" />
+    <EmbeddedResource Include="..\NativeOverlay\third_party\imgui\LICENSE.txt"
+                      LogicalName="Minecraft1211ezcheat.Resources.imgui-LICENSE.txt" />
+    <EmbeddedResource Include="..\NativeOverlay\THIRD_PARTY_NOTICES.txt"
+                      LogicalName="Minecraft1211ezcheat.Resources.THIRD_PARTY_NOTICES.txt" />
+  </ItemGroup>
+
+  <Target Name="BuildRuntimeAssets"
+          BeforeTargets="PrepareResourceNames"
+          Condition="'$(SkipRuntimeAssetBuild)' != 'true'">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\NativeOverlay\build-native.ps1&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)\.." />
+    <Exec Command="&quot;$(MSBuildProjectDirectory)\..\TrainerAgent\gradlew.bat&quot; jar bootstrapJar"
+          WorkingDirectory="$(MSBuildProjectDirectory)\..\TrainerAgent" />
+  </Target>
+</Project>

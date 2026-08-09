@@ -1,0 +1,36 @@
+# Build and IDE output
+**/bin/
+**/obj/
+**/build/
+**/build-*/
+**/out/
+**/publish*/
+release/
+.vs/
+.idea/
+.gradle/
+
+# Runtime and game data
+.minecraft/
+PCL/
+logs/
+runtime/
+*.log
+*.dmp
+
+# Release binaries and bundled runtime artifacts
+*.exe
+*.dll
+*.lib
+*.exp
+*.obj
+*.pdb
+*.jar
+!TrainerAgent/gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration and secrets
+*.user
+*.suo
+*.local
+secrets.json
+credentials.json

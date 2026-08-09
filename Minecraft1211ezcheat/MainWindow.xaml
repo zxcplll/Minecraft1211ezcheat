@@ -1,0 +1,41 @@
+<Window x:Class="Minecraft1211ezcheat.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Minecraft1211ezcheat"
+        Width="430" Height="185" MinWidth="340" MinHeight="165"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+    <Grid Margin="18,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Style="{StaticResource SectionTitleStyle}" Text="注入状态" />
+            <Border Margin="0,10,0,0" Padding="12,10" CornerRadius="6"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="9" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Ellipse x:Name="ConnectionDot" Width="8" Height="8"
+                             Fill="{StaticResource OfflineBrush}" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="2">
+                        <TextBlock x:Name="ConnectionText" FontSize="12" FontWeight="SemiBold"
+                                   Text="正在检测" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="ConnectionDetailText" FontSize="11"
+                                   Foreground="{StaticResource MutedBrush}" Text="等待 Minecraft"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <TextBlock x:Name="HeartbeatText" Margin="0,12,0,0"
+                       Style="{StaticResource CaptionStyle}" Text="等待 Minecraft" />
+        </StackPanel>
+    </Grid>
+</Window>
