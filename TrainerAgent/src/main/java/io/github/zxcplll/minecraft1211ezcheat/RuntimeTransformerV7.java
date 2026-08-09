@@ -10,7 +10,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
-final class RuntimeTransformerV6 implements ClassFileTransformer {
+final class RuntimeTransformerV7 implements ClassFileTransformer {
     static final String PLAYER_CLASS = "net.minecraft.world.entity.player.Player";
     static final String LOCAL_PLAYER_CLASS = "net.minecraft.client.player.LocalPlayer";
     static final String ENTITY_CLASS = "net.minecraft.world.entity.Entity";

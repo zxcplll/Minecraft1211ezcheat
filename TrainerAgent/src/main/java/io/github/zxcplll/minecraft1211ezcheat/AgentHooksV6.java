@@ -35,6 +35,7 @@ public final class AgentHooksV6 {
     private static volatile boolean previousMenuVisible;
     private static volatile ClassLoader gameLoader;
     private static volatile Object targetPlayer;
+    private static volatile Object aimTarget;
     private static volatile FrameData frame = FrameData.empty();
     private static volatile String error = "";
     private static volatile String movementError = "";
@@ -71,6 +72,7 @@ public final class AgentHooksV6 {
             boolean active) {
         if (targetUuid == null ? uuid != null : !targetUuid.equals(uuid)) {
             targetPlayer = null;
+            aimTarget = null;
         }
         targetUuid = uuid;
         sessionActive = active;
@@ -209,6 +211,13 @@ public final class AgentHooksV6 {
                 bindings.flying.setBoolean(abilities, false);
                 bindings.syncAbilities(player);
             }
+            if (player == targetPlayer
+                    && current.aimAssistEnabled()
+                    && ctrlDown
+                    && !menuVisible
+                    && aimTarget != null) {
+                applyAimAtTick(player, aimTarget);
+            }
             movementError = "";
         } catch (Throwable throwable) {
             movementError = "Player tick: " + throwable.getClass().getSimpleName()
@@ -250,6 +259,7 @@ public final class AgentHooksV6 {
 
     public static void captureWorld(Object camera, Object modelView, Object projection) {
         if (camera == null || modelView == null || projection == null) {
+            aimTarget = null;
             frame = FrameData.empty();
             return;
         }
@@ -259,17 +269,20 @@ public final class AgentHooksV6 {
             Object minecraft = bindings.minecraftGetInstance.invoke(null);
             bindings.applyBrightness(minecraft, sessionActive ? settings.brightnessLevel() : 0.0D);
             if (!sessionActive) {
+                aimTarget = null;
                 frame = FrameData.empty();
                 return;
             }
             Object player = bindings.minecraftPlayer.get(minecraft);
             Object level = bindings.minecraftLevel.get(minecraft);
             if (player == null || level == null) {
+                aimTarget = null;
                 frame = FrameData.empty();
                 return;
             }
 
             if (bindings.minecraftScreen.get(minecraft) != null) {
+                aimTarget = null;
                 frame = FrameData.empty();
                 return;
             }
@@ -295,6 +308,7 @@ public final class AgentHooksV6 {
                         bindings, level, player, entities, combined, width, height,
                         cameraX, cameraY, cameraZ);
             }
+            aimTarget = entities.aimTarget();
             OrePoint ore = current.oreTrackingEnabled()
                     ? bindings.oreScanner.scan(bindings, level, player, current.oreType(), current.oreScanRadius())
                     : null;
@@ -562,6 +576,13 @@ public final class AgentHooksV6 {
         bindings.entityXRotO.setFloat(player, targetPitch);
         bindings.entitySetYHeadRot.invoke(player, yaw);
         bindings.entitySetYBodyRot.invoke(player, yaw);
+    }
+
+    private static void applyAimAtTick(Object player, Object target) throws Exception {
+        ClientBindings bindings = clientBindings(player.getClass().getClassLoader());
+        Object minecraft = bindings.minecraftGetInstance.invoke(null);
+        if (bindings.minecraftScreen.get(minecraft) != null) return;
+        aimAt(bindings, player, target);
     }
 
     public static boolean preventFallDamage(Object player) {

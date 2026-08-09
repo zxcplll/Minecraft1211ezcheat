@@ -16,14 +16,16 @@
     <PublishTrimmed>false</PublishTrimmed>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
+    <AgentBuildDir Condition="'$(AgentBuildDir)' == ''">build-release</AgentBuildDir>
+    <NativeBuildDir Condition="'$(NativeBuildDir)' == ''">out</NativeBuildDir>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\TrainerAgent\build-release\libs\Minecraft1211ezcheat-agent-2.0.0.jar"
+    <EmbeddedResource Include="..\TrainerAgent\$(AgentBuildDir)\libs\Minecraft1211ezcheat-agent-2.0.0.jar"
                       LogicalName="Minecraft1211ezcheat.Resources.agent.jar" />
-    <EmbeddedResource Include="..\TrainerAgent\build-release\libs\Minecraft1211ezcheat-bootstrap-2.0.0.jar"
+    <EmbeddedResource Include="..\TrainerAgent\$(AgentBuildDir)\libs\Minecraft1211ezcheat-bootstrap-2.0.0.jar"
                       LogicalName="Minecraft1211ezcheat.Resources.bootstrap.jar" />
-    <EmbeddedResource Include="..\NativeOverlay\out\Minecraft1211ezcheat-overlay-2.0.0.dll"
+    <EmbeddedResource Include="..\NativeOverlay\$(NativeBuildDir)\Minecraft1211ezcheat-overlay-2.0.0.dll"
                       LogicalName="Minecraft1211ezcheat.Resources.overlay.dll" />
     <EmbeddedResource Include="..\NativeOverlay\third_party\imgui\LICENSE.txt"
                       LogicalName="Minecraft1211ezcheat.Resources.imgui-LICENSE.txt" />
@@ -34,9 +36,9 @@
   <Target Name="BuildRuntimeAssets"
           BeforeTargets="PrepareResourceNames"
           Condition="'$(SkipRuntimeAssetBuild)' != 'true'">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\NativeOverlay\build-native.ps1&quot;"
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\NativeOverlay\build-native.ps1&quot; -OutputDirectory &quot;$(NativeBuildDir)&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)\.." />
-    <Exec Command="&quot;$(MSBuildProjectDirectory)\..\TrainerAgent\gradlew.bat&quot; jar bootstrapJar"
+    <Exec Command="&quot;$(MSBuildProjectDirectory)\..\TrainerAgent\gradlew.bat&quot; -PagentBuildDir=$(AgentBuildDir) jar bootstrapJar"
           WorkingDirectory="$(MSBuildProjectDirectory)\..\TrainerAgent" />
   </Target>
 </Project>

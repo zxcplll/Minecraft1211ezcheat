@@ -58,7 +58,6 @@ bool g_initialized = false;
 bool g_win32Initialized = false;
 bool g_openGlInitialized = false;
 bool g_menuVisible = false;
-bool g_menuMinimized = false;
 ImFont* g_font = nullptr;
 
 using GlfwGetWin32Window = HWND(__cdecl*)(void*);
@@ -105,10 +104,8 @@ LRESULT CALLBACK overlayWndProc(HWND window, UINT message, WPARAM wParam, LPARAM
         std::scoped_lock lock(g_configMutex);
         if (g_menuVisible) {
             g_menuVisible = false;
-            g_menuMinimized = false;
         } else {
             g_menuVisible = true;
-            g_menuMinimized = false;
         }
         g_config[MenuVisible] = g_menuVisible ? 1.0 : 0.0;
         markChanged(g_config);
@@ -116,7 +113,7 @@ LRESULT CALLBACK overlayWndProc(HWND window, UINT message, WPARAM wParam, LPARAM
 
     if (g_initialized) {
         ImGui_ImplWin32_WndProcHandler(window, message, wParam, lParam);
-        if ((g_menuVisible || g_menuMinimized) && isInputMessage(message) && !insertMessage) {
+        if (g_menuVisible && isInputMessage(message) && !insertMessage) {
             const ImGuiIO& io = ImGui::GetIO();
             if ((isMouseMessage(message) && io.WantCaptureMouse)
                     || (isKeyboardMessage(message) && io.WantCaptureKeyboard)) {
@@ -151,7 +148,6 @@ void shutdownOverlay() {
     g_window = nullptr;
     g_originalWndProc = nullptr;
     g_font = nullptr;
-    g_menuMinimized = false;
 }
 
 bool initializeOverlay(jlong glfwWindow) {
@@ -362,18 +358,10 @@ void drawMenu(std::array<double, kConfigCount>& config) {
     bool changed = false;
     ImGui::SetNextWindowSize(ImVec2(535.0F, 435.0F), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowPos(ImVec2(42.0F, 58.0F), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Minecraft1211ezcheat", nullptr, ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin("Minecraft1211ezcheat", nullptr, 0);
     ImGui::TextColored(ImVec4(0.38F, 0.92F, 0.73F, 1.0F), "Injected");
-    ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - ImGui::GetFrameHeight());
-    if (ImGui::SmallButton("-")) {
-        g_menuMinimized = true;
-        g_menuVisible = false;
-        config[MenuVisible] = 0.0;
-        changed = true;
-    }
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Minimize");
 
-    if (!g_menuMinimized && ImGui::BeginTabBar("TrainerTabs")) {
+    if (ImGui::BeginTabBar("TrainerTabs")) {
         if (ImGui::BeginTabItem("移动")) {
             float speed = static_cast<float>(config[Speed]);
             changed |= ImGui::SliderFloat("移动倍率", &speed, 0.5F, 10.0F, "%.2fx");
@@ -436,32 +424,6 @@ void drawMenu(std::array<double, kConfigCount>& config) {
     }
     ImGui::End();
     if (changed) markChanged(config);
-}
-
-void drawStatusBar(std::array<double, kConfigCount>& config) {
-    if (!g_menuMinimized || g_menuVisible) return;
-
-    ImGui::SetNextWindowPos(ImVec2(42.0F, 58.0F), ImGuiCond_Always);
-    ImGui::SetNextWindowBgAlpha(0.92F);
-    constexpr ImGuiWindowFlags kStatusFlags =
-        ImGuiWindowFlags_NoTitleBar
-        | ImGuiWindowFlags_NoResize
-        | ImGuiWindowFlags_NoMove
-        | ImGuiWindowFlags_NoCollapse
-        | ImGuiWindowFlags_AlwaysAutoResize
-        | ImGuiWindowFlags_NoSavedSettings
-        | ImGuiWindowFlags_NoFocusOnAppearing;
-    ImGui::Begin("Minecraft1211ezcheat##status", nullptr, kStatusFlags);
-    ImGui::TextColored(ImVec4(0.38F, 0.92F, 0.73F, 1.0F), "Minecraft1211ezcheat  |  Injected");
-    ImGui::SameLine();
-    if (ImGui::SmallButton("+")) {
-        g_menuMinimized = false;
-        g_menuVisible = true;
-        config[MenuVisible] = 1.0;
-        markChanged(config);
-    }
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Open menu");
-    ImGui::End();
 }
 
 std::string fromJavaString(JNIEnv* env, jstring value) {
@@ -552,7 +514,6 @@ Java_io_github_zxcplll_minecraft1211ezcheat_NativeOverlayBridgeV6_render(
         drawOreArrow(oreYaw, orePitch, oreDistance, oreLabel);
     }
     drawMenu(config);
-    drawStatusBar(config);
     if (g_font) ImGui::PopFont();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

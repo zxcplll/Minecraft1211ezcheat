@@ -1,8 +1,16 @@
+param(
+    [string]$OutputDirectory = 'out'
+)
+
 $ErrorActionPreference = 'Stop'
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $imgui = Join-Path $PSScriptRoot 'third_party\imgui'
-$output = Join-Path $PSScriptRoot 'out'
+$output = if ([IO.Path]::IsPathRooted($OutputDirectory)) {
+    $OutputDirectory
+} else {
+    Join-Path $PSScriptRoot $OutputDirectory
+}
 $vcvars = 'C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Auxiliary\Build\vcvars64.bat'
 $javaHome = 'C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot'
 

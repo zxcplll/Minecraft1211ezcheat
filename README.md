@@ -25,6 +25,8 @@ dotnet publish .\Minecraft1211ezcheat\Minecraft1211ezcheat.csproj `
 ```
 
 The build invokes `NativeOverlay/build-native.ps1` and the Gradle agent build.
+Use `-p:AgentBuildDir=build-v8 -p:NativeBuildDir=out-v2` when publishing while
+runtime assets are still open by a running Minecraft process.
 To validate only the Java transformer, run:
 
 ```powershell

@@ -18,7 +18,7 @@ public final class TransformerValidationV6 {
 
     public static void main(String[] arguments) throws Exception {
         if (arguments.length != 1) throw new IllegalArgumentException("Expected the mapped Minecraft jar path");
-        RuntimeTransformerV6 transformer = new RuntimeTransformerV6();
+        RuntimeTransformerV7 transformer = new RuntimeTransformerV7();
         try (JarFile jar = new JarFile(arguments[0])) {
             validate(transformer, jar, "net/minecraft/world/entity/player/Player.class",
                     Map.of("afterNoPhysicsReset", 1, "afterPlayerTick", 1,
@@ -35,7 +35,7 @@ public final class TransformerValidationV6 {
     }
 
     private static void validate(
-            RuntimeTransformerV6 transformer,
+            RuntimeTransformerV7 transformer,
             JarFile jar,
             String entryName,
             Map<String, Integer> expectedCalls) throws Exception {

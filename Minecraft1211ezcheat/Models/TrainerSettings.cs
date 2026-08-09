@@ -22,6 +22,7 @@ public sealed record TrainerSettings
     public bool AimAssistEnabled { get; init; }
     public int AimAssistDistance { get; init; } = 48;
     public double BrightnessLevel { get; init; }
+    public bool TreasureTrackingEnabled { get; init; }
     public bool SessionActive { get; init; } = true;
     public string UpdatedAtUtc { get; init; } = DateTimeOffset.UtcNow.ToString("O");
 

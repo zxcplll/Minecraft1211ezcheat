@@ -5,7 +5,7 @@ plugins {
 group = 'io.github.zxcplll.minecraft1211ezcheat'
 version = '2.0.0'
 
-layout.buildDirectory = file('build-release')
+layout.buildDirectory = file(findProperty('agentBuildDir') ?: 'build-release')
 
 repositories {
     mavenCentral()
@@ -28,8 +28,8 @@ tasks.jar {
     manifest {
         attributes(
             'Main-Class': 'io.github.zxcplll.minecraft1211ezcheat.Attacher',
-            'Agent-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV6',
-            'Premain-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV6',
+            'Agent-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV8',
+            'Premain-Class': 'io.github.zxcplll.minecraft1211ezcheat.AgentMainV8',
             'Can-Redefine-Classes': 'true',
             'Can-Retransform-Classes': 'true'
         )
