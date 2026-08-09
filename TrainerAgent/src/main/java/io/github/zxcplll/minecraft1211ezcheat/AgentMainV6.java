@@ -80,8 +80,12 @@ public final class AgentMainV6 {
         String ownClassName = AgentMainV6.class.getName();
         for (Class<?> loadedClass : instrumentation.getAllLoadedClasses()) {
             String className = loadedClass.getName();
+            // Some mixin classes can have unresolved enclosing-class metadata. Calling
+            // Class.getSimpleName() on those classes forces resolution and can abort attach.
+            int separator = Math.max(className.lastIndexOf('.'), className.lastIndexOf('$'));
+            String simpleName = className.substring(separator + 1);
             if (!className.equals(ownClassName)
-                    && INCOMPATIBLE_AGENT_CLASSES.contains(loadedClass.getSimpleName())) {
+                    && INCOMPATIBLE_AGENT_CLASSES.contains(simpleName)) {
                 throw new IllegalStateException("Minecraft restart required before loading this trainer version");
             }
         }
